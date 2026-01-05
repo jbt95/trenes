@@ -1,7 +1,7 @@
+import { type RenfeInsights, fetchRenfeInsights } from "@/lib/insights";
 import { RouterProvider, createMemoryHistory, createRouter } from "@tanstack/react-router";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { fetchRenfeInsights, type RenfeInsights } from "@/lib/insights";
 import { routeTree } from "../routeTree.gen";
 
 vi.mock("@/lib/insights", () => ({
