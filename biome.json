@@ -15,8 +15,10 @@
       ".next",
       "coverage",
       ".turbo",
+      "**/routeTree.gen.ts",
       "*.config.js",
-      "*.config.ts"
+      "*.config.ts",
+      "**/*.controller.ts"
     ]
   },
   "formatter": {
@@ -120,6 +122,16 @@
         "rules": {
           "suspicious": {
             "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "include": ["*.controller.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noInvalidUseBeforeDeclaration": "off"
           }
         }
       }
