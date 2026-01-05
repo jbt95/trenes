@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { RenfeHistoryService } from "./renfe-history.service";
-import { RenfeService } from "./renfe.service";
+import type { RenfeHistoryService } from "./renfe-history.service";
+import type { RenfeService } from "./renfe.service";
 
 @Injectable()
 export class RenfeCronService {
@@ -9,7 +9,7 @@ export class RenfeCronService {
 
   constructor(
     private readonly renfeService: RenfeService,
-    private readonly historyService: RenfeHistoryService
+    private readonly historyService: RenfeHistoryService,
   ) {}
 
   /**
@@ -25,11 +25,7 @@ export class RenfeCronService {
         this.renfeService.getAlerts(),
         this.renfeService.getInsights(),
       ]);
-      const id = await this.historyService.storeSnapshot(
-        insights,
-        vehicles,
-        alerts
-      );
+      const id = await this.historyService.storeSnapshot(insights, vehicles, alerts);
       this.logger.log(`Snapshot captured successfully: ${id}`);
       return id;
     } catch (error) {

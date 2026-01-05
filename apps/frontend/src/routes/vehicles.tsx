@@ -1,21 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import React from "react";
-import {
-  fetchRenfeVehiclePositions,
-  type VehiclePosition,
-} from "@/lib/vehicles";
-import { fetchRenfeInsights, type RenfeInsights } from "@/lib/insights";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CircleMarker, MapContainer, TileLayer, Tooltip } from "react-leaflet";
+import { type RenfeInsights, fetchRenfeInsights } from "@/lib/insights";
+import { type VehiclePosition, fetchRenfeVehiclePositions } from "@/lib/vehicles";
+import { createFileRoute } from "@tanstack/react-router";
 import type { LatLngBoundsExpression } from "leaflet";
+import React from "react";
+import { CircleMarker, MapContainer, TileLayer, Tooltip } from "react-leaflet";
 
 export const Route = createFileRoute("/vehicles")({
   component: Vehicles,
@@ -51,10 +42,7 @@ const ROUTE_COLORS = [
 ];
 
 /** Generate a consistent color for a route ID */
-const getRouteColor = (
-  routeId: string | null,
-  routeColorMap: Map<string, string>
-): string => {
+const getRouteColor = (routeId: string | null, routeColorMap: Map<string, string>): string => {
   if (!routeId) return "#6b7280"; // gray for unknown routes
 
   const existing = routeColorMap.get(routeId);
@@ -71,31 +59,22 @@ const getRouteColor = (
 };
 
 /** Build a map of route IDs to colors */
-const buildRouteColorMap = (
-  positions: readonly VehiclePosition[]
-): Map<string, string> => {
+const buildRouteColorMap = (positions: readonly VehiclePosition[]): Map<string, string> => {
   const routeIds = [
-    ...new Set(
-      positions.map((p) => p.routeId).filter((id): id is string => id !== null)
-    ),
+    ...new Set(positions.map((p) => p.routeId).filter((id): id is string => id !== null)),
   ];
   routeIds.sort();
 
   const map = new Map<string, string>();
   routeIds.forEach((routeId, index) => {
-    map.set(
-      routeId,
-      ROUTE_COLORS[index % ROUTE_COLORS.length] ?? ROUTE_COLORS[0]
-    );
+    map.set(routeId, ROUTE_COLORS[index % ROUTE_COLORS.length] ?? ROUTE_COLORS[0]);
   });
 
   return map;
 };
 
 /** Set of vehicle IDs that are affected by at least one alert */
-const buildAffectedVehicleIds = (
-  insights: RenfeInsights | null
-): Set<string> => {
+const buildAffectedVehicleIds = (insights: RenfeInsights | null): Set<string> => {
   if (!insights) return new Set();
   const ids = new Set<string>();
   for (const corr of insights.correlations) {
@@ -107,9 +86,7 @@ const buildAffectedVehicleIds = (
 };
 
 /** Map vehicle ID -> list of alert headers affecting it */
-const buildVehicleAlertMap = (
-  insights: RenfeInsights | null
-): Map<string, string[]> => {
+const buildVehicleAlertMap = (insights: RenfeInsights | null): Map<string, string[]> => {
   if (!insights) return new Map();
   const map = new Map<string, string[]>();
   for (const corr of insights.correlations) {
@@ -126,17 +103,15 @@ const buildVehicleAlertMap = (
   return map;
 };
 
-const extent = (
-  values: readonly number[]
-): { readonly min: number; readonly max: number } => {
+const extent = (values: readonly number[]): { readonly min: number; readonly max: number } => {
   if (values.length === 0) return { min: 0, max: 0 };
   const first = values[0];
   if (first === undefined) return { min: 0, max: 0 };
 
-  return values.reduce(
-    (acc, v) => ({ min: Math.min(acc.min, v), max: Math.max(acc.max, v) }),
-    { min: first, max: first }
-  );
+  return values.reduce((acc, v) => ({ min: Math.min(acc.min, v), max: Math.max(acc.max, v) }), {
+    min: first,
+    max: first,
+  });
 };
 
 const formatTimestamp = (ts: number | null): string => {
@@ -156,9 +131,7 @@ function Vehicles() {
       fetchRenfeInsights(signal).catch(() => null),
     ]);
     setState({ kind: "loaded", positions, insights });
-    setSelectedId((prev) =>
-      prev && positions.some((p) => p.id === prev) ? prev : null
-    );
+    setSelectedId((prev) => (prev && positions.some((p) => p.id === prev) ? prev : null));
   }, []);
 
   React.useEffect(() => {
@@ -191,18 +164,9 @@ function Vehicles() {
   const insights = state.kind === "loaded" ? state.insights : null;
 
   // Hooks must be called unconditionally (before early returns)
-  const affectedIds = React.useMemo(
-    () => buildAffectedVehicleIds(insights),
-    [insights]
-  );
-  const vehicleAlertMap = React.useMemo(
-    () => buildVehicleAlertMap(insights),
-    [insights]
-  );
-  const routeColorMap = React.useMemo(
-    () => buildRouteColorMap(positions),
-    [positions]
-  );
+  const affectedIds = React.useMemo(() => buildAffectedVehicleIds(insights), [insights]);
+  const vehicleAlertMap = React.useMemo(() => buildVehicleAlertMap(insights), [insights]);
+  const routeColorMap = React.useMemo(() => buildRouteColorMap(positions), [positions]);
 
   if (state.kind === "loading") {
     return (
@@ -213,9 +177,7 @@ function Vehicles() {
             Actualizar
           </Button>
         </div>
-        <p className="text-muted-foreground">
-          Cargando posiciones de vehículos…
-        </p>
+        <p className="text-muted-foreground">Cargando posiciones de vehículos…</p>
       </div>
     );
   }
@@ -253,10 +215,7 @@ function Vehicles() {
       : undefined;
 
   const mapCenter: [number, number] = displayedPositions.length
-    ? [
-        displayedPositions[0]?.latitude ?? 40.4168,
-        displayedPositions[0]?.longitude ?? -3.7038,
-      ]
+    ? [displayedPositions[0]?.latitude ?? 40.4168, displayedPositions[0]?.longitude ?? -3.7038]
     : [40.4168, -3.7038];
 
   return (
@@ -265,8 +224,7 @@ function Vehicles() {
         <div>
           <h1 className="text-3xl font-bold">Vehículos Renfe</h1>
           <p className="text-sm text-muted-foreground">
-            {positions.length} vehículos · {affectedIds.size} afectados por
-            alertas
+            {positions.length} vehículos · {affectedIds.size} afectados por alertas
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -288,8 +246,8 @@ function Vehicles() {
           <CardHeader>
             <CardTitle>Lista</CardTitle>
             <CardDescription>
-              Haz clic en un elemento para resaltarlo en el mapa. Los colores
-              representan diferentes rutas. Borde rojo = afectado por alerta.
+              Haz clic en un elemento para resaltarlo en el mapa. Los colores representan diferentes
+              rutas. Borde rojo = afectado por alerta.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -315,22 +273,15 @@ function Vehicles() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 truncate font-medium">
                               <span style={{ color: routeColor }}>●</span>
-                              {isAffected && (
-                                <span className="text-red-600 text-xs">
-                                  (⚠)
-                                </span>
-                              )}
+                              {isAffected && <span className="text-red-600 text-xs">(⚠)</span>}
                               {title}
                             </div>
                             <div className="truncate text-sm text-muted-foreground">
-                              {p.currentStatus ?? "—"} ·{" "}
-                              {formatTimestamp(p.timestamp)}
+                              {p.currentStatus ?? "—"} · {formatTimestamp(p.timestamp)}
                             </div>
                             <div className="truncate text-xs text-muted-foreground">
                               trip: {p.tripId ?? "—"} · route:{" "}
-                              <span style={{ color: routeColor }}>
-                                {p.routeId ?? "—"}
-                              </span>
+                              <span style={{ color: routeColor }}>{p.routeId ?? "—"}</span>
                             </div>
                             {alertLabels.length > 0 && (
                               <div
@@ -338,9 +289,7 @@ function Vehicles() {
                                 title={alertLabels.join(" · ")}
                               >
                                 ⚠ {alertLabels.slice(0, 2).join(" · ")}
-                                {alertLabels.length > 2
-                                  ? ` +${alertLabels.length - 2}`
-                                  : ""}
+                                {alertLabels.length > 2 ? ` +${alertLabels.length - 2}` : ""}
                               </div>
                             )}
                           </div>
@@ -411,10 +360,7 @@ function Vehicles() {
                       <Tooltip direction="top" offset={[0, -8]} opacity={1}>
                         <div>
                           <strong>{p.label ?? p.id}</strong>
-                          <div
-                            className="text-xs"
-                            style={{ color: routeColor }}
-                          >
+                          <div className="text-xs" style={{ color: routeColor }}>
                             Ruta: {p.routeId ?? "desconocida"}
                           </div>
                           {alertLabels.length > 0 && (
@@ -437,19 +383,14 @@ function Vehicles() {
                 Leyenda de Rutas ({routeColorMap.size} rutas):
               </div>
               <div className="flex flex-wrap gap-2">
-                {[...routeColorMap.entries()]
-                  .slice(0, 20)
-                  .map(([routeId, color]) => (
-                    <div
-                      key={routeId}
-                      className="flex items-center gap-1 text-xs"
-                    >
-                      <span style={{ color }}>●</span>
-                      <span className="truncate max-w-[80px]" title={routeId}>
-                        {routeId}
-                      </span>
-                    </div>
-                  ))}
+                {[...routeColorMap.entries()].slice(0, 20).map(([routeId, color]) => (
+                  <div key={routeId} className="flex items-center gap-1 text-xs">
+                    <span style={{ color }}>●</span>
+                    <span className="truncate max-w-[80px]" title={routeId}>
+                      {routeId}
+                    </span>
+                  </div>
+                ))}
                 {routeColorMap.size > 20 && (
                   <span className="text-xs text-muted-foreground">
                     +{routeColorMap.size - 20} más

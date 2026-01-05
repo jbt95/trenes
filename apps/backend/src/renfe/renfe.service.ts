@@ -136,7 +136,7 @@ const TranslatedTextSchema = z
             text: z.string().optional(),
             language: z.string().optional(),
           })
-          .passthrough()
+          .passthrough(),
       )
       .default([]),
   })
@@ -188,7 +188,7 @@ const AlertsFeedSchema = z
   .passthrough();
 
 const pickTranslatedText = (
-  input: z.infer<typeof TranslatedTextSchema> | undefined
+  input: z.infer<typeof TranslatedTextSchema> | undefined,
 ): string | null => {
   if (!input) return null;
   for (const t of input.translation) {
@@ -197,9 +197,7 @@ const pickTranslatedText = (
   return null;
 };
 
-const countByKey = (
-  values: readonly (string | null)[]
-): RenfeCountByKeyDto[] => {
+const countByKey = (values: readonly (string | null)[]): RenfeCountByKeyDto[] => {
   const map = new Map<string, number>();
   for (const v of values) {
     const key = v ?? "UNKNOWN";
@@ -211,11 +209,7 @@ const countByKey = (
     .sort((a, b) => b.count - a.count);
 };
 
-const isActiveAt = (
-  start: number | null,
-  end: number | null,
-  nowSeconds: number
-): boolean => {
+const isActiveAt = (start: number | null, end: number | null, nowSeconds: number): boolean => {
   const started = start === null || start <= nowSeconds;
   const notEnded = end === null || end >= nowSeconds;
   return started && notEnded;
@@ -224,7 +218,7 @@ const isActiveAt = (
 const computeDurationMinutes = (
   start: number | null,
   end: number | null,
-  nowSeconds: number
+  nowSeconds: number,
 ): number | null => {
   if (start === null) return null;
   const endTime = end ?? nowSeconds;
@@ -251,23 +245,19 @@ const getHourFromTimestamp = (ts: number | null): string => {
 
 @Injectable()
 export class RenfeService {
-  private static readonly VEHICLE_POSITIONS_URL =
-    "https://gtfsrt.renfe.com/vehicle_positions.json";
+  private static readonly VEHICLE_POSITIONS_URL = "https://gtfsrt.renfe.com/vehicle_positions.json";
   private static readonly ALERTS_URL = "https://gtfsrt.renfe.com/alerts.json";
 
   async getVehiclePositions(): Promise<readonly RenfeVehiclePositionDto[]> {
     const response = await fetch(RenfeService.VEHICLE_POSITIONS_URL);
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch Renfe feed: ${response.status} ${response.statusText}`
-      );
+      throw new Error(`Failed to fetch Renfe feed: ${response.status} ${response.statusText}`);
     }
 
     const json: unknown = await response.json();
     const parsed = FeedSchema.safeParse(json);
     if (!parsed.success) {
-      const message =
-        parsed.error.issues[0]?.message ?? "Invalid Renfe GTFS-RT JSON";
+      const message = parsed.error.issues[0]?.message ?? "Invalid Renfe GTFS-RT JSON";
       throw new Error(message);
     }
 
@@ -293,16 +283,13 @@ export class RenfeService {
   async getAlerts(): Promise<readonly RenfeAlertDto[]> {
     const response = await fetch(RenfeService.ALERTS_URL);
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch Renfe alerts: ${response.status} ${response.statusText}`
-      );
+      throw new Error(`Failed to fetch Renfe alerts: ${response.status} ${response.statusText}`);
     }
 
     const json: unknown = await response.json();
     const parsed = AlertsFeedSchema.safeParse(json);
     if (!parsed.success) {
-      const message =
-        parsed.error.issues[0]?.message ?? "Invalid Renfe GTFS-RT alerts JSON";
+      const message = parsed.error.issues[0]?.message ?? "Invalid Renfe GTFS-RT alerts JSON";
       throw new Error(message);
     }
 
@@ -312,13 +299,12 @@ export class RenfeService {
         if (!alert) return null;
 
         const firstPeriod = alert.activePeriod[0];
-        const informedEntities: RenfeAlertInformedEntityDto[] =
-          alert.informedEntity.map((ie) => ({
-            agencyId: ie.agencyId ?? null,
-            routeId: ie.routeId ?? null,
-            tripId: ie.trip?.tripId ?? null,
-            stopId: ie.stopId ?? null,
-          }));
+        const informedEntities: RenfeAlertInformedEntityDto[] = alert.informedEntity.map((ie) => ({
+          agencyId: ie.agencyId ?? null,
+          routeId: ie.routeId ?? null,
+          tripId: ie.trip?.tripId ?? null,
+          stopId: ie.stopId ?? null,
+        }));
 
         return {
           id: entity.id,
@@ -338,10 +324,7 @@ export class RenfeService {
   async getInsights(): Promise<RenfeInsightsDto> {
     const generatedAt = Math.floor(Date.now() / 1000);
 
-    const [vehicles, alerts] = await Promise.all([
-      this.getVehiclePositions(),
-      this.getAlerts(),
-    ]);
+    const [vehicles, alerts] = await Promise.all([this.getVehiclePositions(), this.getAlerts()]);
 
     // Index vehicles by tripId and routeId
     const vehiclesByTripId = new Map<string, Set<string>>();
@@ -413,9 +396,7 @@ export class RenfeService {
     }
 
     const activeAlerts = correlations.filter((c) => c.isActiveNow).length;
-    const alertsWithMatches = correlations.filter(
-      (c) => c.matchedVehicleCount > 0
-    ).length;
+    const alertsWithMatches = correlations.filter((c) => c.matchedVehicleCount > 0).length;
 
     // Build route summaries
     const allRouteIds = new Set<string>();
@@ -430,24 +411,18 @@ export class RenfeService {
 
     const routeSummaries: RenfeRouteSummaryDto[] = [...allRouteIds]
       .map((routeId) => {
-        const routeVehicles =
-          vehiclesByRouteId.get(routeId) ?? new Set<string>();
+        const routeVehicles = vehiclesByRouteId.get(routeId) ?? new Set<string>();
         const routeAlerts = alerts.filter((a) =>
-          a.informedEntities.some((ie) => ie.routeId === routeId)
+          a.informedEntities.some((ie) => ie.routeId === routeId),
         );
         const activeRouteAlerts = routeAlerts.filter((a) =>
-          isActiveAt(a.start, a.end, generatedAt)
+          isActiveAt(a.start, a.end, generatedAt),
         );
         const effects = [
-          ...new Set(
-            routeAlerts
-              .map((a) => a.effect)
-              .filter((e): e is string => e !== null)
-          ),
+          ...new Set(routeAlerts.map((a) => a.effect).filter((e): e is string => e !== null)),
         ];
         const timestamps = vehicleTimestampsByRoute.get(routeId) ?? [];
-        const lastVehicleUpdate =
-          timestamps.length > 0 ? Math.max(...timestamps) : null;
+        const lastVehicleUpdate = timestamps.length > 0 ? Math.max(...timestamps) : null;
 
         return {
           routeId,
@@ -460,9 +435,7 @@ export class RenfeService {
       })
       .sort((a, b) => b.alertCount - a.alertCount);
 
-    const routesWithAlerts = routeSummaries.filter(
-      (r) => r.alertCount > 0
-    ).length;
+    const routesWithAlerts = routeSummaries.filter((r) => r.alertCount > 0).length;
 
     // Build alert timeline
     const alertTimeline: RenfeAlertTimelineItemDto[] = alerts
@@ -479,17 +452,11 @@ export class RenfeService {
       .sort((a, b) => (b.start ?? 0) - (a.start ?? 0));
 
     // Alerts by hour (start time)
-    const alertsByHour = countByKey(
-      alerts.map((a) => getHourFromTimestamp(a.start))
-    );
+    const alertsByHour = countByKey(alerts.map((a) => getHourFromTimestamp(a.start)));
 
     // Duration distribution
-    const durations = alerts.map((a) =>
-      computeDurationMinutes(a.start, a.end, generatedAt)
-    );
-    const alertDurationDistribution = countByKey(
-      durations.map(getDurationBucket)
-    );
+    const durations = alerts.map((a) => computeDurationMinutes(a.start, a.end, generatedAt));
+    const alertDurationDistribution = countByKey(durations.map(getDurationBucket));
 
     return {
       generatedAt,
@@ -509,9 +476,7 @@ export class RenfeService {
       alertDurationDistribution,
       routeSummaries,
       alertTimeline,
-      correlations: correlations.sort(
-        (a, b) => b.matchedVehicleCount - a.matchedVehicleCount
-      ),
+      correlations: correlations.sort((a, b) => b.matchedVehicleCount - a.matchedVehicleCount),
     };
   }
 }

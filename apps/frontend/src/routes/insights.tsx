@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { type RenfeInsights, fetchRenfeInsights } from "@/lib/insights";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import {
@@ -11,16 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { fetchRenfeInsights, type RenfeInsights } from "@/lib/insights";
 
 export const Route = createFileRoute("/insights")({
   component: Insights,
@@ -115,8 +109,7 @@ function Insights() {
           <h1 className="text-3xl font-bold tracking-tight">Análisis</h1>
           <p className="mt-2 text-destructive">{state.message}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Consejo: asegúrate de que el backend esté ejecutándose y que
-            VITE_API_URL apunte a él.
+            Consejo: asegúrate de que el backend esté ejecutándose y que VITE_API_URL apunte a él.
           </p>
         </div>
         <Button variant="outline" onClick={() => void onRefresh()}>
@@ -177,9 +170,7 @@ function Insights() {
                 <CardDescription>Vehículos</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">
-                  {insights.totals.vehicles}
-                </div>
+                <div className="text-3xl font-bold">{insights.totals.vehicles}</div>
                 <p className="text-xs text-muted-foreground">
                   Coincidentes: {insights.totals.vehiclesMatched}
                 </p>
@@ -190,12 +181,8 @@ function Insights() {
                 <CardDescription>Alertas</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">
-                  {insights.totals.alerts}
-                </div>
-                <p className="text-xs text-orange-600">
-                  Activas: {insights.totals.activeAlerts}
-                </p>
+                <div className="text-3xl font-bold">{insights.totals.alerts}</div>
+                <p className="text-xs text-orange-600">Activas: {insights.totals.activeAlerts}</p>
               </CardContent>
             </Card>
             <Card>
@@ -203,9 +190,7 @@ function Insights() {
                 <CardDescription>Rutas</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">
-                  {insights.totals.uniqueRoutes}
-                </div>
+                <div className="text-3xl font-bold">{insights.totals.uniqueRoutes}</div>
                 <p className="text-xs text-orange-600">
                   Con alertas: {insights.totals.routesWithAlerts}
                 </p>
@@ -216,12 +201,8 @@ function Insights() {
                 <CardDescription>Correlaciones</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">
-                  {insights.totals.alertsWithMatches}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Alertas con vehículos
-                </p>
+                <div className="text-3xl font-bold">{insights.totals.alertsWithMatches}</div>
+                <p className="text-xs text-muted-foreground">Alertas con vehículos</p>
               </CardContent>
             </Card>
           </div>
@@ -252,12 +233,7 @@ function Insights() {
                         {insights.alertsByEffect.slice(0, 8).map((entry) => (
                           <Cell
                             key={entry.key}
-                            fill={
-                              COLORS[
-                                insights.alertsByEffect.indexOf(entry) %
-                                  COLORS.length
-                              ]
-                            }
+                            fill={COLORS[insights.alertsByEffect.indexOf(entry) % COLORS.length]}
                           />
                         ))}
                       </Pie>
@@ -282,12 +258,7 @@ function Insights() {
                       margin={{ left: 80, right: 16 }}
                     >
                       <XAxis type="number" allowDecimals={false} />
-                      <YAxis
-                        type="category"
-                        dataKey="key"
-                        tick={{ fontSize: 11 }}
-                        width={100}
-                      />
+                      <YAxis type="category" dataKey="key" tick={{ fontSize: 11 }} width={100} />
                       <Tooltip />
                       <Bar dataKey="count" fill="#3b82f6" />
                     </BarChart>
@@ -301,17 +272,12 @@ function Insights() {
             <Card>
               <CardHeader>
                 <CardTitle>Alertas por Hora</CardTitle>
-                <CardDescription>
-                  ¿Cuándo comienzan los incidentes?
-                </CardDescription>
+                <CardDescription>¿Cuándo comienzan los incidentes?</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[280px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={[...insights.alertsByHour]}
-                      margin={{ left: 8, right: 8 }}
-                    >
+                    <BarChart data={[...insights.alertsByHour]} margin={{ left: 8, right: 8 }}>
                       <XAxis dataKey="key" tick={{ fontSize: 10 }} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
@@ -348,17 +314,12 @@ function Insights() {
           <Card>
             <CardHeader>
               <CardTitle>Distribución de Estado de Vehículos</CardTitle>
-              <CardDescription>
-                Estado actual de todos los vehículos
-              </CardDescription>
+              <CardDescription>Estado actual de todos los vehículos</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[240px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[...insights.vehiclesByStatus]}
-                    margin={{ left: 8, right: 8 }}
-                  >
+                  <BarChart data={[...insights.vehiclesByStatus]} margin={{ left: 8, right: 8 }}>
                     <XAxis dataKey="key" tick={{ fontSize: 11 }} />
                     <YAxis allowDecimals={false} />
                     <Tooltip />
@@ -378,8 +339,7 @@ function Insights() {
             <CardHeader>
               <CardTitle>Tabla de Salud de Rutas</CardTitle>
               <CardDescription>
-                Rutas ordenadas por número de alertas (
-                {insights.routeSummaries.length} total)
+                Rutas ordenadas por número de alertas ({insights.routeSummaries.length} total)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -387,38 +347,20 @@ function Insights() {
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 bg-background">
                     <tr className="border-b">
-                      <th className="px-2 py-2 text-left font-medium">
-                        ID Ruta
-                      </th>
-                      <th className="px-2 py-2 text-right font-medium">
-                        Vehículos
-                      </th>
-                      <th className="px-2 py-2 text-right font-medium">
-                        Alertas
-                      </th>
-                      <th className="px-2 py-2 text-right font-medium">
-                        Activas
-                      </th>
-                      <th className="px-2 py-2 text-left font-medium">
-                        Efectos
-                      </th>
-                      <th className="px-2 py-2 text-left font-medium">
-                        Última Actualización
-                      </th>
+                      <th className="px-2 py-2 text-left font-medium">ID Ruta</th>
+                      <th className="px-2 py-2 text-right font-medium">Vehículos</th>
+                      <th className="px-2 py-2 text-right font-medium">Alertas</th>
+                      <th className="px-2 py-2 text-right font-medium">Activas</th>
+                      <th className="px-2 py-2 text-left font-medium">Efectos</th>
+                      <th className="px-2 py-2 text-left font-medium">Última Actualización</th>
                     </tr>
                   </thead>
                   <tbody>
                     {insights.routeSummaries.map((r) => (
                       <tr key={r.routeId} className="border-b last:border-b-0">
-                        <td className="px-2 py-2 font-mono text-xs">
-                          {r.routeId}
-                        </td>
-                        <td className="px-2 py-2 text-right tabular-nums">
-                          {r.vehicleCount}
-                        </td>
-                        <td className="px-2 py-2 text-right tabular-nums">
-                          {r.alertCount}
-                        </td>
+                        <td className="px-2 py-2 font-mono text-xs">{r.routeId}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{r.vehicleCount}</td>
+                        <td className="px-2 py-2 text-right tabular-nums">{r.alertCount}</td>
                         <td className="px-2 py-2 text-right tabular-nums">
                           {r.activeAlertCount > 0 ? (
                             <span className="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800">
@@ -432,9 +374,7 @@ function Insights() {
                           className="px-2 py-2 text-xs max-w-[200px] truncate"
                           title={r.effects.join(", ")}
                         >
-                          {r.effects
-                            .map((e) => e.replace(/_/g, " "))
-                            .join(", ") || "—"}
+                          {r.effects.map((e) => e.replace(/_/g, " ")).join(", ") || "—"}
                         </td>
                         <td className="px-2 py-2 text-xs text-muted-foreground">
                           {formatUnixSeconds(r.lastVehicleUpdate)}
@@ -457,10 +397,7 @@ function Insights() {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={insights.routeSummaries.slice(0, 10).map((r) => ({
-                        route:
-                          r.routeId.length > 12
-                            ? `${r.routeId.slice(0, 12)}…`
-                            : r.routeId,
+                        route: r.routeId.length > 12 ? `${r.routeId.slice(0, 12)}…` : r.routeId,
                         alerts: r.alertCount,
                         active: r.activeAlertCount,
                       }))}
@@ -468,18 +405,9 @@ function Insights() {
                       margin={{ left: 80, right: 16 }}
                     >
                       <XAxis type="number" allowDecimals={false} />
-                      <YAxis
-                        type="category"
-                        dataKey="route"
-                        tick={{ fontSize: 10 }}
-                        width={90}
-                      />
+                      <YAxis type="category" dataKey="route" tick={{ fontSize: 10 }} width={90} />
                       <Tooltip />
-                      <Bar
-                        dataKey="alerts"
-                        fill="#ef4444"
-                        name="Total Alertas"
-                      />
+                      <Bar dataKey="alerts" fill="#ef4444" name="Total Alertas" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -498,22 +426,14 @@ function Insights() {
                         .sort((a, b) => b.vehicleCount - a.vehicleCount)
                         .slice(0, 10)
                         .map((r) => ({
-                          route:
-                            r.routeId.length > 12
-                              ? `${r.routeId.slice(0, 12)}…`
-                              : r.routeId,
+                          route: r.routeId.length > 12 ? `${r.routeId.slice(0, 12)}…` : r.routeId,
                           vehicles: r.vehicleCount,
                         }))}
                       layout="vertical"
                       margin={{ left: 80, right: 16 }}
                     >
                       <XAxis type="number" allowDecimals={false} />
-                      <YAxis
-                        type="category"
-                        dataKey="route"
-                        tick={{ fontSize: 10 }}
-                        width={90}
-                      />
+                      <YAxis type="category" dataKey="route" tick={{ fontSize: 10 }} width={90} />
                       <Tooltip />
                       <Bar dataKey="vehicles" fill="#3b82f6" name="Vehículos" />
                     </BarChart>
@@ -532,8 +452,8 @@ function Insights() {
             <CardHeader>
               <CardTitle>Línea de Tiempo de Alertas</CardTitle>
               <CardDescription>
-                Todas las alertas ordenadas por hora de inicio (
-                {insights.alertTimeline.length} total)
+                Todas las alertas ordenadas por hora de inicio ({insights.alertTimeline.length}{" "}
+                total)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -541,23 +461,13 @@ function Insights() {
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 bg-background">
                     <tr className="border-b">
-                      <th className="px-2 py-2 text-left font-medium">
-                        Estado
-                      </th>
-                      <th className="px-2 py-2 text-left font-medium">
-                        Alerta
-                      </th>
+                      <th className="px-2 py-2 text-left font-medium">Estado</th>
+                      <th className="px-2 py-2 text-left font-medium">Alerta</th>
                       <th className="px-2 py-2 text-left font-medium">Causa</th>
-                      <th className="px-2 py-2 text-left font-medium">
-                        Efecto
-                      </th>
-                      <th className="px-2 py-2 text-left font-medium">
-                        Inicio
-                      </th>
+                      <th className="px-2 py-2 text-left font-medium">Efecto</th>
+                      <th className="px-2 py-2 text-left font-medium">Inicio</th>
                       <th className="px-2 py-2 text-left font-medium">Fin</th>
-                      <th className="px-2 py-2 text-right font-medium">
-                        Duración
-                      </th>
+                      <th className="px-2 py-2 text-right font-medium">Duración</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -580,12 +490,8 @@ function Insights() {
                         >
                           {a.header ?? a.alertId}
                         </td>
-                        <td className="px-2 py-2 text-xs">
-                          {a.cause?.replace(/_/g, " ") ?? "—"}
-                        </td>
-                        <td className="px-2 py-2 text-xs">
-                          {a.effect?.replace(/_/g, " ") ?? "—"}
-                        </td>
+                        <td className="px-2 py-2 text-xs">{a.cause?.replace(/_/g, " ") ?? "—"}</td>
+                        <td className="px-2 py-2 text-xs">{a.effect?.replace(/_/g, " ") ?? "—"}</td>
                         <td className="px-2 py-2 text-xs text-muted-foreground">
                           {formatUnixSeconds(a.start)}
                         </td>
@@ -622,24 +528,12 @@ function Insights() {
                   <table className="w-full text-sm">
                     <thead className="sticky top-0 bg-background">
                       <tr className="border-b">
-                        <th className="px-2 py-2 text-left font-medium">
-                          Alerta
-                        </th>
-                        <th className="px-2 py-2 text-left font-medium">
-                          Causa
-                        </th>
-                        <th className="px-2 py-2 text-left font-medium">
-                          Efecto
-                        </th>
-                        <th className="px-2 py-2 text-left font-medium">
-                          Activa
-                        </th>
-                        <th className="px-2 py-2 text-right font-medium">
-                          Vehículos
-                        </th>
-                        <th className="px-2 py-2 text-left font-medium">
-                          TripIds / RouteIds
-                        </th>
+                        <th className="px-2 py-2 text-left font-medium">Alerta</th>
+                        <th className="px-2 py-2 text-left font-medium">Causa</th>
+                        <th className="px-2 py-2 text-left font-medium">Efecto</th>
+                        <th className="px-2 py-2 text-left font-medium">Activa</th>
+                        <th className="px-2 py-2 text-right font-medium">Vehículos</th>
+                        <th className="px-2 py-2 text-left font-medium">TripIds / RouteIds</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -651,14 +545,8 @@ function Insights() {
                         ];
 
                         return (
-                          <tr
-                            key={c.alertId}
-                            className="border-b last:border-b-0"
-                          >
-                            <td
-                              className="px-2 py-2 max-w-[320px] truncate"
-                              title={title}
-                            >
+                          <tr key={c.alertId} className="border-b last:border-b-0">
+                            <td className="px-2 py-2 max-w-[320px] truncate" title={title}>
                               {title}
                             </td>
                             <td className="px-2 py-2 max-w-[140px] truncate text-xs">
@@ -669,20 +557,14 @@ function Insights() {
                             </td>
                             <td className="px-2 py-2">
                               {c.isActiveNow ? (
-                                <span className="text-orange-600 text-xs">
-                                  sí
-                                </span>
+                                <span className="text-orange-600 text-xs">sí</span>
                               ) : (
-                                <span className="text-muted-foreground text-xs">
-                                  no
-                                </span>
+                                <span className="text-muted-foreground text-xs">no</span>
                               )}
                             </td>
                             <td className="px-2 py-2 text-right tabular-nums">
                               {c.matchedVehicleCount > 0 ? (
-                                <span className="font-medium">
-                                  {c.matchedVehicleCount}
-                                </span>
+                                <span className="font-medium">{c.matchedVehicleCount}</span>
                               ) : (
                                 <span className="text-muted-foreground">0</span>
                               )}
@@ -704,8 +586,8 @@ function Insights() {
           </Card>
 
           <p className="text-xs text-muted-foreground">
-            Lógica de correlación: alert.informedEntity.tripId / routeId
-            coincide con vehiclePosition.tripId / routeId.
+            Lógica de correlación: alert.informedEntity.tripId / routeId coincide con
+            vehiclePosition.tripId / routeId.
           </p>
         </div>
       )}

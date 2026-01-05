@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { getApiBaseUrl } from "@/lib/api";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import {
@@ -10,16 +14,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { getApiBaseUrl } from "@/lib/api";
 
 export const Route = createFileRoute("/history")({
   component: History,
@@ -74,19 +68,16 @@ type LoadState =
 
 const API_URL = getApiBaseUrl();
 
-async function fetchHistorySummary(
-  signal?: AbortSignal
-): Promise<HistorySummary> {
+async function fetchHistorySummary(signal?: AbortSignal): Promise<HistorySummary> {
   const res = await fetch(`${API_URL}/renfe/history/summary`, { signal });
-  if (!res.ok)
-    throw new Error(`Failed to fetch history summary: ${res.status}`);
+  if (!res.ok) throw new Error(`Failed to fetch history summary: ${res.status}`);
   return res.json();
 }
 
 async function fetchSnapshots(
   from?: string,
   to?: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<readonly SnapshotInfo[]> {
   const params = new URLSearchParams();
   if (from) params.set("from", from);
@@ -97,10 +88,7 @@ async function fetchSnapshots(
   return res.json();
 }
 
-async function fetchSnapshotDetail(
-  id: string,
-  signal?: AbortSignal
-): Promise<SnapshotDetail> {
+async function fetchSnapshotDetail(id: string, signal?: AbortSignal): Promise<SnapshotDetail> {
   const res = await fetch(`${API_URL}/renfe/history/snapshots/${id}`, {
     signal,
   });
@@ -143,8 +131,7 @@ const formatTimestamp = (ts: number): string => {
 
 function History() {
   const [state, setState] = React.useState<LoadState>({ kind: "loading" });
-  const [selectedSnapshot, setSelectedSnapshot] =
-    React.useState<SnapshotDetail | null>(null);
+  const [selectedSnapshot, setSelectedSnapshot] = React.useState<SnapshotDetail | null>(null);
   const [isCapturing, setIsCapturing] = React.useState(false);
   const [dateRange, setDateRange] = React.useState<{
     from: string;
@@ -158,15 +145,11 @@ function History() {
     async (signal?: AbortSignal) => {
       const [summary, snapshots] = await Promise.all([
         fetchHistorySummary(signal),
-        fetchSnapshots(
-          dateRange.from || undefined,
-          dateRange.to || undefined,
-          signal
-        ),
+        fetchSnapshots(dateRange.from || undefined, dateRange.to || undefined, signal),
       ]);
       setState({ kind: "loaded", summary, snapshots });
     },
-    [dateRange.from, dateRange.to]
+    [dateRange.from, dateRange.to],
   );
 
   React.useEffect(() => {
@@ -236,8 +219,7 @@ function History() {
           <h1 className="text-3xl font-bold tracking-tight">Historial</h1>
           <p className="mt-2 text-destructive">{state.message}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Consejo: asegúrate de que el backend esté ejecutándose y que el cron
-            job esté activo.
+            Consejo: asegúrate de que el backend esté ejecutándose y que el cron job esté activo.
           </p>
         </div>
         <Button variant="outline" onClick={() => void onRefresh()}>
@@ -264,21 +246,14 @@ function History() {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Historial de Datos
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Historial de Datos</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {summary.totalSnapshots} capturas almacenadas · Desde{" "}
-            {formatDate(summary.oldestSnapshot)} hasta{" "}
-            {formatDate(summary.newestSnapshot)}
+            {formatDate(summary.oldestSnapshot)} hasta {formatDate(summary.newestSnapshot)}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => void onCapture()}
-            disabled={isCapturing}
-          >
+          <Button variant="outline" onClick={() => void onCapture()} disabled={isCapturing}>
             {isCapturing ? "Capturando..." : "📸 Capturar ahora"}
           </Button>
           <Button variant="outline" onClick={() => void onRefresh()}>
@@ -302,12 +277,8 @@ function History() {
             <CardDescription>Registros Vehículos</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              {summary.totalVehicleRecords.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {summary.uniqueVehicleIds} únicos
-            </p>
+            <div className="text-3xl font-bold">{summary.totalVehicleRecords.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">{summary.uniqueVehicleIds} únicos</p>
           </CardContent>
         </Card>
         <Card>
@@ -315,12 +286,8 @@ function History() {
             <CardDescription>Registros Alertas</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              {summary.totalAlertRecords.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {summary.uniqueAlertIds} únicas
-            </p>
+            <div className="text-3xl font-bold">{summary.totalAlertRecords.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">{summary.uniqueAlertIds} únicas</p>
           </CardContent>
         </Card>
         <Card>
@@ -330,9 +297,7 @@ function History() {
           <CardContent>
             <div className="text-3xl font-bold">
               {summary.snapshotsByDay.length > 0
-                ? Math.round(
-                    summary.totalSnapshots / summary.snapshotsByDay.length
-                  )
+                ? Math.round(summary.totalSnapshots / summary.snapshotsByDay.length)
                 : 0}
             </div>
             <p className="text-xs text-muted-foreground">promedio</p>
@@ -345,45 +310,31 @@ function History() {
         <CardContent className="pt-4">
           <div className="flex flex-wrap items-end gap-4">
             <div className="flex flex-col gap-1">
-              <label
-                htmlFor="date-from"
-                className="text-xs font-medium text-muted-foreground"
-              >
+              <label htmlFor="date-from" className="text-xs font-medium text-muted-foreground">
                 Desde
               </label>
               <input
                 id="date-from"
                 type="datetime-local"
                 value={dateRange.from}
-                onChange={(e) =>
-                  setDateRange((prev) => ({ ...prev, from: e.target.value }))
-                }
+                onChange={(e) => setDateRange((prev) => ({ ...prev, from: e.target.value }))}
                 className="h-9 rounded-md border px-3 text-sm bg-background"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label
-                htmlFor="date-to"
-                className="text-xs font-medium text-muted-foreground"
-              >
+              <label htmlFor="date-to" className="text-xs font-medium text-muted-foreground">
                 Hasta
               </label>
               <input
                 id="date-to"
                 type="datetime-local"
                 value={dateRange.to}
-                onChange={(e) =>
-                  setDateRange((prev) => ({ ...prev, to: e.target.value }))
-                }
+                onChange={(e) => setDateRange((prev) => ({ ...prev, to: e.target.value }))}
                 className="h-9 rounded-md border px-3 text-sm bg-background"
               />
             </div>
             {(dateRange.from || dateRange.to) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setDateRange({ from: "", to: "" })}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setDateRange({ from: "", to: "" })}>
                 Limpiar
               </Button>
             )}
@@ -455,8 +406,7 @@ function History() {
           <CardHeader>
             <CardTitle>Lista de Capturas</CardTitle>
             <CardDescription>
-              Haz clic en una captura para ver detalles ({snapshots.length}{" "}
-              mostradas)
+              Haz clic en una captura para ver detalles ({snapshots.length} mostradas)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -485,8 +435,7 @@ function History() {
                                 {formatTimestamp(s.timestamp)}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                {s.vehicleCount} vehículos · {s.alertCount}{" "}
-                                alertas
+                                {s.vehicleCount} vehículos · {s.alertCount} alertas
                               </div>
                             </div>
                             <div className="text-xs text-muted-foreground font-mono">
@@ -521,31 +470,19 @@ function History() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-xs text-muted-foreground">ID</div>
-                    <div className="font-mono text-xs">
-                      {selectedSnapshot.id}
-                    </div>
+                    <div className="font-mono text-xs">{selectedSnapshot.id}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">
-                      Timestamp
-                    </div>
-                    <div className="text-sm">
-                      {formatTimestamp(selectedSnapshot.timestamp)}
-                    </div>
+                    <div className="text-xs text-muted-foreground">Timestamp</div>
+                    <div className="text-sm">{formatTimestamp(selectedSnapshot.timestamp)}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground">
-                      Vehículos
-                    </div>
-                    <div className="font-medium">
-                      {selectedSnapshot.vehicleCount}
-                    </div>
+                    <div className="text-xs text-muted-foreground">Vehículos</div>
+                    <div className="font-medium">{selectedSnapshot.vehicleCount}</div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Alertas</div>
-                    <div className="font-medium">
-                      {selectedSnapshot.alertCount}
-                    </div>
+                    <div className="font-medium">{selectedSnapshot.alertCount}</div>
                   </div>
                 </div>
 
@@ -557,14 +494,8 @@ function History() {
                     <ul className="text-xs space-y-1">
                       {selectedSnapshot.vehicles.slice(0, 10).map((v) => (
                         <li key={v.id} className="text-muted-foreground">
-                          <span className="font-medium text-foreground">
-                            {v.label ?? v.id}
-                          </span>
-                          {v.routeId && (
-                            <span className="ml-1 text-blue-600">
-                              ({v.routeId})
-                            </span>
-                          )}
+                          <span className="font-medium text-foreground">{v.label ?? v.id}</span>
+                          {v.routeId && <span className="ml-1 text-blue-600">({v.routeId})</span>}
                         </li>
                       ))}
                     </ul>
@@ -573,9 +504,7 @@ function History() {
 
                 {selectedSnapshot.alerts.length > 0 && (
                   <div>
-                    <div className="text-sm font-medium mb-2">
-                      Alertas activas:
-                    </div>
+                    <div className="text-sm font-medium mb-2">Alertas activas:</div>
                     <ScrollArea className="h-[120px]">
                       <ul className="text-xs space-y-1">
                         {selectedSnapshot.alerts
@@ -586,9 +515,7 @@ function History() {
                                 {a.header ?? a.id}
                               </span>
                               {a.effect && (
-                                <span className="ml-1 text-orange-600">
-                                  ({a.effect})
-                                </span>
+                                <span className="ml-1 text-orange-600">({a.effect})</span>
                               )}
                             </li>
                           ))}

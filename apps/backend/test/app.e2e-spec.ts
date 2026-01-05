@@ -23,16 +23,11 @@ describe("AppController (e2e)", () => {
   });
 
   it("/ (GET)", () => {
-    return request(app.getHttpServer())
-      .get("/")
-      .expect(200)
-      .expect("Hello from NestJS Backend!");
+    return request(app.getHttpServer()).get("/").expect(200).expect("Hello from NestJS Backend!");
   });
 
   it("/health (GET)", async () => {
-    const response = await request(app.getHttpServer())
-      .get("/health")
-      .expect(200);
+    const response = await request(app.getHttpServer()).get("/health").expect(200);
 
     expect(response.body).toHaveProperty("status", "ok");
     expect(response.body).toHaveProperty("timestamp");

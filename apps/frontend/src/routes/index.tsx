@@ -1,4 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { type RenfeInsights, fetchRenfeInsights } from "@/lib/insights";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import React from "react";
 import {
   Bar,
@@ -11,16 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { fetchRenfeInsights, type RenfeInsights } from "@/lib/insights";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -84,12 +78,8 @@ function Index() {
       <div className="space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">
-              Panel de Control
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Cargando datos en tiempo real…
-            </p>
+            <h1 className="text-4xl font-bold tracking-tight">Panel de Control</h1>
+            <p className="mt-2 text-muted-foreground">Cargando datos en tiempo real…</p>
           </div>
         </div>
       </div>
@@ -100,13 +90,10 @@ function Index() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Panel de Control
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">Panel de Control</h1>
           <p className="mt-2 text-destructive">{state.message}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Consejo: asegúrate de que el backend esté ejecutándose en el puerto
-            4000.
+            Consejo: asegúrate de que el backend esté ejecutándose en el puerto 4000.
           </p>
         </div>
         <Button variant="outline" onClick={() => void onRefresh()}>
@@ -117,23 +104,16 @@ function Index() {
   }
 
   const { insights } = state;
-  const activeAlertsList = insights.alertTimeline
-    .filter((a) => a.isActiveNow)
-    .slice(0, 8);
-  const topDisruptedRoutes = insights.routeSummaries
-    .filter((r) => r.alertCount > 0)
-    .slice(0, 8);
+  const activeAlertsList = insights.alertTimeline.filter((a) => a.isActiveNow).slice(0, 8);
+  const topDisruptedRoutes = insights.routeSummaries.filter((r) => r.alertCount > 0).slice(0, 8);
 
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Panel de Control
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">Panel de Control</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Resumen en tiempo real de Renfe · actualizado{" "}
-            {formatUnixSeconds(insights.generatedAt)}
+            Resumen en tiempo real de Renfe · actualizado {formatUnixSeconds(insights.generatedAt)}
           </p>
         </div>
         <Button variant="outline" onClick={() => void onRefresh()}>
@@ -156,9 +136,7 @@ function Index() {
             <CardDescription>Alertas Activas</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-500">
-              {insights.totals.activeAlerts}
-            </div>
+            <div className="text-3xl font-bold text-orange-500">{insights.totals.activeAlerts}</div>
           </CardContent>
         </Card>
         <Card>
@@ -184,9 +162,7 @@ function Index() {
             <CardDescription>Rutas</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              {insights.totals.uniqueRoutes}
-            </div>
+            <div className="text-3xl font-bold">{insights.totals.uniqueRoutes}</div>
           </CardContent>
         </Card>
         <Card>
@@ -226,12 +202,7 @@ function Index() {
                     {insights.alertsByEffect.slice(0, 6).map((entry) => (
                       <Cell
                         key={entry.key}
-                        fill={
-                          COLORS[
-                            insights.alertsByEffect.indexOf(entry) %
-                              COLORS.length
-                          ]
-                        }
+                        fill={COLORS[insights.alertsByEffect.indexOf(entry) % COLORS.length]}
                       />
                     ))}
                   </Pie>
@@ -257,12 +228,7 @@ function Index() {
                   margin={{ left: 60 }}
                 >
                   <XAxis type="number" allowDecimals={false} />
-                  <YAxis
-                    type="category"
-                    dataKey="key"
-                    tick={{ fontSize: 11 }}
-                    width={80}
-                  />
+                  <YAxis type="category" dataKey="key" tick={{ fontSize: 11 }} width={80} />
                   <Tooltip />
                   <Bar dataKey="count" fill="#3b82f6" />
                 </BarChart>
@@ -275,9 +241,7 @@ function Index() {
         <Card>
           <CardHeader>
             <CardTitle>Duración de Alertas</CardTitle>
-            <CardDescription>
-              Cuánto suelen durar las incidencias
-            </CardDescription>
+            <CardDescription>Cuánto suelen durar las incidencias</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[240px]">
@@ -308,9 +272,7 @@ function Index() {
           <CardContent>
             <ScrollArea className="h-[280px]">
               {activeAlertsList.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Sin alertas activas 🎉
-                </p>
+                <p className="text-sm text-muted-foreground">Sin alertas activas 🎉</p>
               ) : (
                 <ul className="space-y-2">
                   {activeAlertsList.map((a) => (
@@ -321,8 +283,7 @@ function Index() {
                             {a.header ?? a.alertId}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {a.effect?.replace("_", " ")} ·{" "}
-                            {a.cause?.replace("_", " ") ?? "—"}
+                            {a.effect?.replace("_", " ")} · {a.cause?.replace("_", " ") ?? "—"}
                           </div>
                           {a.durationMinutes && (
                             <div className="text-xs text-orange-600">
@@ -353,16 +314,12 @@ function Index() {
         <Card>
           <CardHeader>
             <CardTitle>Rutas Más Afectadas</CardTitle>
-            <CardDescription>
-              Rutas con más actividad de alertas
-            </CardDescription>
+            <CardDescription>Rutas con más actividad de alertas</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[280px]">
               {topDisruptedRoutes.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Sin rutas con alertas
-                </p>
+                <p className="text-sm text-muted-foreground">Sin rutas con alertas</p>
               ) : (
                 <table className="w-full text-sm">
                   <thead>
@@ -377,17 +334,11 @@ function Index() {
                     {topDisruptedRoutes.map((r) => (
                       <tr key={r.routeId} className="border-b last:border-b-0">
                         <td className="py-2 font-mono text-xs">{r.routeId}</td>
-                        <td className="py-2 text-right tabular-nums">
-                          {r.vehicleCount}
-                        </td>
-                        <td className="py-2 text-right tabular-nums">
-                          {r.alertCount}
-                        </td>
+                        <td className="py-2 text-right tabular-nums">{r.vehicleCount}</td>
+                        <td className="py-2 text-right tabular-nums">{r.alertCount}</td>
                         <td className="py-2 text-right tabular-nums">
                           {r.activeAlertCount > 0 ? (
-                            <span className="text-orange-600">
-                              {r.activeAlertCount}
-                            </span>
+                            <span className="text-orange-600">{r.activeAlertCount}</span>
                           ) : (
                             "0"
                           )}
@@ -413,17 +364,12 @@ function Index() {
       <Card>
         <CardHeader>
           <CardTitle>Alertas por Hora</CardTitle>
-          <CardDescription>
-            ¿Cuándo suelen comenzar las incidencias?
-          </CardDescription>
+          <CardDescription>¿Cuándo suelen comenzar las incidencias?</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={[...insights.alertsByHour]}
-                margin={{ left: 8, right: 8 }}
-              >
+              <BarChart data={[...insights.alertsByHour]} margin={{ left: 8, right: 8 }}>
                 <XAxis dataKey="key" tick={{ fontSize: 10 }} />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
@@ -439,9 +385,7 @@ function Index() {
         <Link to="/vehicles" className="block">
           <Card className="transition-colors hover:bg-accent">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                🚂 Vehículos
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2">🚂 Vehículos</CardTitle>
               <CardDescription>
                 Ver {insights.totals.vehicles} vehículos en mapa interactivo
               </CardDescription>
@@ -451,9 +395,7 @@ function Index() {
         <Link to="/alerts" className="block">
           <Card className="transition-colors hover:bg-accent">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                ⚠️ Alertas
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2">⚠️ Alertas</CardTitle>
               <CardDescription>
                 Explorar {insights.totals.alerts} alertas de servicio
               </CardDescription>
@@ -463,12 +405,8 @@ function Index() {
         <Link to="/insights" className="block">
           <Card className="transition-colors hover:bg-accent">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                📊 Análisis
-              </CardTitle>
-              <CardDescription>
-                Estadísticas, correlaciones y salud de rutas
-              </CardDescription>
+              <CardTitle className="flex items-center gap-2">📊 Análisis</CardTitle>
+              <CardDescription>Estadísticas, correlaciones y salud de rutas</CardDescription>
             </CardHeader>
           </Card>
         </Link>

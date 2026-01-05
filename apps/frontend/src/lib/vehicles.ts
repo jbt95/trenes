@@ -29,8 +29,7 @@ const isVehiclePosition = (value: unknown): value is VehiclePosition => {
     isNumber(value.latitude) &&
     isNumber(value.longitude) &&
     (value.timestamp === null ||
-      (typeof value.timestamp === "number" &&
-        Number.isFinite(value.timestamp))) &&
+      (typeof value.timestamp === "number" && Number.isFinite(value.timestamp))) &&
     isStringOrNull(value.tripId) &&
     isStringOrNull(value.routeId) &&
     isStringOrNull(value.currentStatus)
@@ -38,7 +37,7 @@ const isVehiclePosition = (value: unknown): value is VehiclePosition => {
 };
 
 export const fetchRenfeVehiclePositions = async (
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<readonly VehiclePosition[]> => {
   const response = await apiFetch("/renfe/vehicle-positions", {
     method: "GET",
@@ -46,7 +45,7 @@ export const fetchRenfeVehiclePositions = async (
   });
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch Renfe vehicle positions: ${response.status} ${response.statusText}`
+      `Failed to fetch Renfe vehicle positions: ${response.status} ${response.statusText}`,
     );
   }
 

@@ -7,10 +7,7 @@ export const getApiBaseUrl = (): string => {
   return "http://localhost:4000";
 };
 
-export const apiFetch = async (
-  path: string,
-  init?: RequestInit
-): Promise<Response> => {
+export const apiFetch = async (path: string, init?: RequestInit): Promise<Response> => {
   const baseUrl = getApiBaseUrl();
   const url = `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 

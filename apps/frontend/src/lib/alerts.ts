@@ -55,14 +55,10 @@ const isAlert = (value: unknown): value is RenfeAlert => {
   );
 };
 
-export const fetchRenfeAlerts = async (
-  signal?: AbortSignal
-): Promise<readonly RenfeAlert[]> => {
+export const fetchRenfeAlerts = async (signal?: AbortSignal): Promise<readonly RenfeAlert[]> => {
   const response = await apiFetch("/renfe/alerts", { method: "GET", signal });
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch Renfe alerts: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch Renfe alerts: ${response.status} ${response.statusText}`);
   }
 
   const data: unknown = await response.json();

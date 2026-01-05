@@ -1,8 +1,4 @@
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRouter,
-} from "@tanstack/react-router";
+import { RouterProvider, createMemoryHistory, createRouter } from "@tanstack/react-router";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { routeTree } from "../routeTree.gen";
@@ -21,9 +17,7 @@ describe("Frontend App", () => {
     render(<RouterProvider router={router} />);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { level: 1, name: /trenes/i })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 1, name: /trenes/i })).toBeInTheDocument();
     });
   });
 });

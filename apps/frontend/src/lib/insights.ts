@@ -64,9 +64,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
 const isCountByKey = (value: unknown): value is CountByKey =>
-  isRecord(value) &&
-  typeof value.key === "string" &&
-  typeof value.count === "number";
+  isRecord(value) && typeof value.key === "string" && typeof value.count === "number";
 
 const isCorrelation = (value: unknown): value is AlertVehicleCorrelation => {
   if (!isRecord(value)) return false;
@@ -80,44 +78,27 @@ const isCorrelation = (value: unknown): value is AlertVehicleCorrelation => {
   return true;
 };
 
-export const fetchRenfeInsights = async (
-  signal?: AbortSignal
-): Promise<RenfeInsights> => {
+export const fetchRenfeInsights = async (signal?: AbortSignal): Promise<RenfeInsights> => {
   const response = await apiFetch("/renfe/insights", { method: "GET", signal });
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch Renfe insights: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch Renfe insights: ${response.status} ${response.statusText}`);
   }
 
   const data: unknown = await response.json();
   if (!isRecord(data)) throw new Error("Invalid response: expected object");
 
-  if (!isRecord(data.totals))
-    throw new Error("Invalid response: missing totals");
+  if (!isRecord(data.totals)) throw new Error("Invalid response: missing totals");
 
-  if (
-    !Array.isArray(data.alertsByEffect) ||
-    !data.alertsByEffect.every(isCountByKey)
-  ) {
+  if (!Array.isArray(data.alertsByEffect) || !data.alertsByEffect.every(isCountByKey)) {
     throw new Error("Invalid response: alertsByEffect");
   }
-  if (
-    !Array.isArray(data.alertsByCause) ||
-    !data.alertsByCause.every(isCountByKey)
-  ) {
+  if (!Array.isArray(data.alertsByCause) || !data.alertsByCause.every(isCountByKey)) {
     throw new Error("Invalid response: alertsByCause");
   }
-  if (
-    !Array.isArray(data.vehiclesByStatus) ||
-    !data.vehiclesByStatus.every(isCountByKey)
-  ) {
+  if (!Array.isArray(data.vehiclesByStatus) || !data.vehiclesByStatus.every(isCountByKey)) {
     throw new Error("Invalid response: vehiclesByStatus");
   }
-  if (
-    !Array.isArray(data.correlations) ||
-    !data.correlations.every(isCorrelation)
-  ) {
+  if (!Array.isArray(data.correlations) || !data.correlations.every(isCorrelation)) {
     throw new Error("Invalid response: correlations");
   }
 

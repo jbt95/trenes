@@ -1,11 +1,7 @@
-import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type {
-  RenfeInsightsDto,
-  RenfeVehiclePositionDto,
-  RenfeAlertDto,
-} from "./renfe.service";
+import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
+import type { RenfeAlertDto, RenfeInsightsDto, RenfeVehiclePositionDto } from "./renfe.service";
 
 export type HistorySnapshot = {
   readonly id: string;
@@ -67,7 +63,7 @@ export class RenfeHistoryService implements OnModuleInit {
   async storeSnapshot(
     insights: RenfeInsightsDto,
     vehicles: readonly RenfeVehiclePositionDto[],
-    alerts: readonly RenfeAlertDto[]
+    alerts: readonly RenfeAlertDto[],
   ): Promise<string> {
     this.ensureDataDir();
 
@@ -153,7 +149,7 @@ export class RenfeHistoryService implements OnModuleInit {
       // Handle backward compatibility - old entries don't have id field
       // Try to find by filename containing the id
       entry = index.snapshots.find(
-        (s) => s.filename === `snapshot-${id}.json` || s.filename.includes(id)
+        (s) => s.filename === `snapshot-${id}.json` || s.filename.includes(id),
       );
     }
 
@@ -208,11 +204,11 @@ export class RenfeHistoryService implements OnModuleInit {
    */
   async getSnapshotsInRange(
     startTimestamp: number,
-    endTimestamp: number
+    endTimestamp: number,
   ): Promise<readonly HistorySnapshot[]> {
     const index = await this.loadIndex();
     const filtered = index.snapshots.filter(
-      (s) => s.timestamp >= startTimestamp && s.timestamp <= endTimestamp
+      (s) => s.timestamp >= startTimestamp && s.timestamp <= endTimestamp,
     );
 
     const snapshots: HistorySnapshot[] = [];
@@ -276,9 +272,7 @@ export class RenfeHistoryService implements OnModuleInit {
     const sampleSnapshots = index.snapshots.slice(-20);
     for (const entry of sampleSnapshots) {
       // Use id if available, otherwise use filename-based lookup
-      const snapshotId =
-        entry.id ??
-        entry.filename.replace("snapshot-", "").replace(".json", "");
+      const snapshotId = entry.id ?? entry.filename.replace("snapshot-", "").replace(".json", "");
       const snapshot = await this.loadSnapshotById(snapshotId);
       if (snapshot) {
         if (snapshot.vehicles) {
@@ -299,12 +293,8 @@ export class RenfeHistoryService implements OnModuleInit {
 
     return {
       totalSnapshots: index.snapshots.length,
-      oldestSnapshot: oldest
-        ? new Date(oldest.timestamp * 1000).toISOString()
-        : null,
-      newestSnapshot: newest
-        ? new Date(newest.timestamp * 1000).toISOString()
-        : null,
+      oldestSnapshot: oldest ? new Date(oldest.timestamp * 1000).toISOString() : null,
+      newestSnapshot: newest ? new Date(newest.timestamp * 1000).toISOString() : null,
       totalVehicleRecords,
       totalAlertRecords,
       uniqueVehicleIds: vehicleIds.size,
@@ -318,7 +308,7 @@ export class RenfeHistoryService implements OnModuleInit {
    */
   async getSnapshotList(
     from?: Date,
-    to?: Date
+    to?: Date,
   ): Promise<
     readonly {
       id: string;
@@ -354,16 +344,11 @@ export class RenfeHistoryService implements OnModuleInit {
    * Cleanup old snapshots (keep last N days)
    */
   async cleanupOldSnapshots(keepDays = 30): Promise<number> {
-    const cutoffTimestamp =
-      Math.floor(Date.now() / 1000) - keepDays * 24 * 60 * 60;
+    const cutoffTimestamp = Math.floor(Date.now() / 1000) - keepDays * 24 * 60 * 60;
     const index = await this.loadIndex();
 
-    const toDelete = index.snapshots.filter(
-      (s) => s.timestamp < cutoffTimestamp
-    );
-    const toKeep = index.snapshots.filter(
-      (s) => s.timestamp >= cutoffTimestamp
-    );
+    const toDelete = index.snapshots.filter((s) => s.timestamp < cutoffTimestamp);
+    const toKeep = index.snapshots.filter((s) => s.timestamp >= cutoffTimestamp);
 
     let deletedCount = 0;
     for (const entry of toDelete) {
@@ -374,9 +359,7 @@ export class RenfeHistoryService implements OnModuleInit {
           deletedCount++;
         }
       } catch (error) {
-        this.logger.warn(
-          `Failed to delete snapshot ${entry.filename}: ${error}`
-        );
+        this.logger.warn(`Failed to delete snapshot ${entry.filename}: ${error}`);
       }
     }
 

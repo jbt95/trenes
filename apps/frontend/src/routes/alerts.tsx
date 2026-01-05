@@ -1,15 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { type RenfeAlert, fetchRenfeAlerts } from "@/lib/alerts";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { fetchRenfeAlerts, type RenfeAlert } from "@/lib/alerts";
 
 export const Route = createFileRoute("/alerts")({
   component: Alerts,
@@ -26,9 +20,7 @@ const formatUnixSeconds = (seconds: number | null): string => {
   return Number.isNaN(date.getTime()) ? String(seconds) : date.toLocaleString();
 };
 
-const compactEntity = (
-  entity: RenfeAlert["informedEntities"][number]
-): string => {
+const compactEntity = (entity: RenfeAlert["informedEntities"][number]): string => {
   const parts = [
     entity.agencyId ? `agency:${entity.agencyId}` : null,
     entity.routeId ? `route:${entity.routeId}` : null,
@@ -46,9 +38,7 @@ function Alerts() {
   const reload = React.useCallback(async (signal?: AbortSignal) => {
     const alerts = await fetchRenfeAlerts(signal);
     setState({ kind: "loaded", alerts });
-    setSelectedId((prev) =>
-      prev && alerts.some((a) => a.id === prev) ? prev : null
-    );
+    setSelectedId((prev) => (prev && alerts.some((a) => a.id === prev) ? prev : null));
   }, []);
 
   React.useEffect(() => {
@@ -99,8 +89,7 @@ function Alerts() {
           <h1 className="text-3xl font-bold tracking-tight">Alertas Renfe</h1>
           <p className="mt-2 text-destructive">{state.message}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Consejo: asegúrate de que el backend esté ejecutándose y que
-            VITE_API_URL apunte a él.
+            Consejo: asegúrate de que el backend esté ejecutándose y que VITE_API_URL apunte a él.
           </p>
         </div>
         <Button variant="outline" onClick={() => void onRefresh()}>
@@ -118,9 +107,7 @@ function Alerts() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Alertas Renfe</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {alerts.length} alertas
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{alerts.length} alertas</p>
         </div>
         <Button variant="outline" onClick={() => void onRefresh()}>
           Actualizar
@@ -131,9 +118,7 @@ function Alerts() {
         <Card>
           <CardHeader>
             <CardTitle>Lista</CardTitle>
-            <CardDescription>
-              Haz clic en una alerta para ver detalles.
-            </CardDescription>
+            <CardDescription>Haz clic en una alerta para ver detalles.</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[520px]">
@@ -158,8 +143,7 @@ function Alerts() {
                               {a.cause ?? "—"} · {a.effect ?? "—"}
                             </div>
                             <div className="truncate text-xs text-muted-foreground">
-                              {formatUnixSeconds(a.start)} →{" "}
-                              {formatUnixSeconds(a.end)}
+                              {formatUnixSeconds(a.start)} → {formatUnixSeconds(a.end)}
                             </div>
                           </div>
                           <div className="shrink-0 text-xs text-muted-foreground">
@@ -179,41 +163,29 @@ function Alerts() {
           <CardHeader>
             <CardTitle>Detalles</CardTitle>
             <CardDescription>
-              {selected
-                ? (selected.header ?? selected.id)
-                : "Selecciona una alerta"}
+              {selected ? (selected.header ?? selected.id) : "Selecciona una alerta"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {!selected ? (
-              <p className="text-sm text-muted-foreground">
-                Ninguna alerta seleccionada.
-              </p>
+              <p className="text-sm text-muted-foreground">Ninguna alerta seleccionada.</p>
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-2">
                   <div className="text-sm">
-                    <span className="font-medium">Causa:</span>{" "}
-                    {selected.cause ?? "—"}
+                    <span className="font-medium">Causa:</span> {selected.cause ?? "—"}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">Efecto:</span>{" "}
-                    {selected.effect ?? "—"}
+                    <span className="font-medium">Efecto:</span> {selected.effect ?? "—"}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">Activa:</span>{" "}
-                    {formatUnixSeconds(selected.start)} →{" "}
-                    {formatUnixSeconds(selected.end)}
+                    <span className="font-medium">Activa:</span> {formatUnixSeconds(selected.start)}{" "}
+                    → {formatUnixSeconds(selected.end)}
                   </div>
                   <div className="text-sm">
                     <span className="font-medium">URL:</span>{" "}
                     {selected.url ? (
-                      <a
-                        className="underline"
-                        href={selected.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <a className="underline" href={selected.url} target="_blank" rel="noreferrer">
                         Abrir
                       </a>
                     ) : (
@@ -236,9 +208,7 @@ function Alerts() {
                   {selected.informedEntities.length ? (
                     <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
                       {selected.informedEntities.slice(0, 50).map((ie, idx) => (
-                        <li key={`${selected.id}:${idx}`}>
-                          {compactEntity(ie)}
-                        </li>
+                        <li key={`${selected.id}:${idx}`}>{compactEntity(ie)}</li>
                       ))}
                     </ul>
                   ) : (
@@ -251,9 +221,7 @@ function Alerts() {
         </Card>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        Fuente: https://gtfsrt.renfe.com/alerts.json
-      </p>
+      <p className="text-xs text-muted-foreground">Fuente: https://gtfsrt.renfe.com/alerts.json</p>
     </div>
   );
 }

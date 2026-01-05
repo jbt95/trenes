@@ -1,6 +1,6 @@
+import { cn } from "@/lib/utils";
 import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { cn } from "@/lib/utils";
 
 export const Route = createRootRoute({
   component: () => (
@@ -14,7 +14,7 @@ export const Route = createRootRoute({
             <Link
               to="/"
               className={cn(
-                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
               )}
               activeProps={{ className: "text-foreground bg-accent" }}
             >
@@ -23,7 +23,7 @@ export const Route = createRootRoute({
             <Link
               to="/vehicles"
               className={cn(
-                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
               )}
               activeProps={{ className: "text-foreground bg-accent" }}
             >
@@ -32,7 +32,7 @@ export const Route = createRootRoute({
             <Link
               to="/insights"
               className={cn(
-                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
               )}
               activeProps={{ className: "text-foreground bg-accent" }}
             >
@@ -41,7 +41,7 @@ export const Route = createRootRoute({
             <Link
               to="/alerts"
               className={cn(
-                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
               )}
               activeProps={{ className: "text-foreground bg-accent" }}
             >
@@ -50,7 +50,7 @@ export const Route = createRootRoute({
             <Link
               to="/history"
               className={cn(
-                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
               )}
               activeProps={{ className: "text-foreground bg-accent" }}
             >
@@ -59,7 +59,7 @@ export const Route = createRootRoute({
             <Link
               to="/about"
               className={cn(
-                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
               )}
               activeProps={{ className: "text-foreground bg-accent" }}
             >
